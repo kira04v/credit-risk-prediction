@@ -1,11 +1,3 @@
-run - 
-source venv/bin/activate
-python -m uvicorn app.api:app --reload
-streamlit run app/app.py
-
-
-
-
 # Credit Risk Prediction System (End-to-End Machine Learning Project)
 
 An end-to-end machine learning system for assessing loan default risk, combining data preprocessing, predictive modeling, explainability, and real-time deployment.
@@ -14,21 +6,38 @@ An end-to-end machine learning system for assessing loan default risk, combining
 
 ## Overview
 
-Financial institutions must evaluate borrower risk before approving loans. This project simulates a real-world credit risk assessment pipeline that:
+Financial institutions must evaluate borrower risk before approving loans. Poor decisions can result in significant financial losses due to defaults or missed opportunities.
+
+This project simulates a real-world credit risk assessment pipeline that:
 
 * Predicts the probability of loan default
-* Classifies applicants into risk categories
+* Classifies applicants into actionable risk categories
 * Provides interpretable insights into model decisions
-* Exposes predictions through an API and interactive dashboard
+* Exposes predictions via API and interactive dashboard
+
+---
+
+## Demo
+
+### User Interface
+![UI](assets/ui.png)
+
+### API Endpoint
+![API](assets/api_1.png)
+![API](assets/api_2.png)
+
+### Model Insights
+![Feature Importance](assets/feature_importance.png)
 
 ---
 
 ## Key Features
 
-* Data preprocessing pipeline with cleaning, outlier handling, and feature engineering
-* Machine learning model using Random Forest (optionally XGBoost)
-* Explainable AI using SHAP to interpret predictions
-* Cost-sensitive evaluation to reflect real-world financial impact
+* Data preprocessing pipeline (missing values, outlier handling, feature engineering)
+* Feature engineering using domain-specific financial ratios
+* Machine learning model using Random Forest with class balancing
+* Explainable AI using SHAP for interpretability
+* Cost-sensitive evaluation aligned with real-world financial impact
 * REST API built with FastAPI for real-time inference
 * Interactive dashboard built with Streamlit
 
@@ -74,20 +83,70 @@ credit-risk/
 
 ## Model Performance
 
-* ROC-AUC Score: 0.8701
-* Evaluated using precision, recall, confusion matrix
-* Decision threshold tuned based on business cost
+### Baseline Model (Threshold = 0.5)
+
+Confusion Matrix:
+
+```
+[[22139   267]
+ [ 3137  4191]]
+```
+
+Classification Report:
+
+* Accuracy: **0.89**
+* Precision (Default Class): **0.94**
+* Recall (Default Class): **0.57**
+* F1-score (Default Class): **0.71**
+
+ROC-AUC Score: **0.8701**
 
 ---
 
-## Business Impact
+## Business-Oriented Evaluation
 
-Traditional evaluation metrics like accuracy are insufficient in financial settings. This project incorporates cost-sensitive analysis:
+To reflect real-world impact, the model is evaluated using cost-sensitive metrics:
 
-* False Negatives (approving defaulters) lead to high financial loss
-* False Positives (rejecting good customers) lead to opportunity loss
+* False Positive (rejecting good customer): ₹10,000
+* False Negative (approving defaulter): ₹100,000
 
-The system enables more informed and financially aligned decision-making.
+Results:
+
+* False Positives: **267**
+* False Negatives: **3137**
+* Estimated Business Loss: **₹316,370,000**
+
+---
+
+## Threshold Optimization
+
+To reduce financial risk, the decision threshold was adjusted.
+
+### Tuned Model (Threshold ≈ 0.6–0.7)
+
+Confusion Matrix:
+
+```
+[[22319    87]
+ [ 3412  3916]]
+```
+
+Key changes:
+
+* False Positives reduced from **267 → 87**
+* Precision improved to **0.98** (for default prediction)
+* Slight drop in recall (trade-off accepted for lower financial risk)
+
+Accuracy: **0.88**
+
+---
+
+## Key Insights
+
+* Loan-to-income ratio is a strong indicator of default risk
+* Lower credit scores significantly increase default probability
+* Financial ratios are more predictive than raw features
+* Reducing false positives significantly improves business outcomes
 
 ---
 
@@ -117,42 +176,25 @@ Output:
 
 ## How to Run
 
-### 1. Clone the repository
-
 ```bash
-git clone <your-repo-link>
-cd credit-risk
+source venv/bin/activate
+python -m uvicorn app.api:app --reload
+streamlit run app/app.py
 ```
 
-### 2. Create virtual environment
+---
+
+## Setup (Full)
 
 ```bash
+git clone https://github.com/kira04v/credit-risk-prediction.git
+cd credit-risk
+
 python3 -m venv venv
 source venv/bin/activate
-```
 
-### 3. Install dependencies
-
-```bash
 pip install -r requirements.txt
-```
-
-### 4. Train the model
-
-```bash
 python src/train.py
-```
-
-### 5. Run the API
-
-```bash
-python -m uvicorn app.api:app --reload
-```
-
-### 6. Run the UI
-
-```bash
-streamlit run app/app.py
 ```
 
 ---
@@ -167,28 +209,27 @@ pytest tests/
 
 ## Future Improvements
 
-* Cloud deployment (Render, AWS, or GCP)
-* Integration of SHAP explanations into UI
-* Real-time data ingestion
-* Authentication and access control
+* Deploy on cloud (Render / AWS / GCP)
+* Integrate SHAP explanations into UI
+* Improve model using XGBoost or LightGBM
+* Add user authentication and logging
 
 ---
 
 ## Key Learnings
 
-* Designing modular and reusable ML pipelines
+* Building modular and reusable ML pipelines
 * Handling feature consistency between training and inference
-* Deploying ML models using APIs and interactive dashboards
-* Aligning model evaluation with business objectives
+* Deploying ML systems with APIs and interactive dashboards
+* Aligning ML performance with business decision-making
 
 ---
 
 ## Contact
 
 Ayush Srivastava
-Email: (add your email)
-LinkedIn/GitHub: (add links)
+GitHub: https://github.com/kira04v
 
 ---
 
-If this project is useful, consider starring the repository.
+If you found this project useful, consider starring the repository.
